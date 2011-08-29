@@ -84,3 +84,5 @@ app = app.removeHandler(appAround1);
 app = app.removeHandler(appAround2);
 
 console.log(app.handle(1, 2, 3));
+
+console.dir(app)
