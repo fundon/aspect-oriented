@@ -1,4 +1,4 @@
-var Aop = require('../lib/aop2').Aop,
+var Aop = require('../lib/aop').Aop,
     Method = Aop.Method,
     Halt = Aop.Halt,
     Prevent = Aop.Prevent,
@@ -39,9 +39,16 @@ var appAround2 = new Advice({name: 'app around 2'}, function (advice){
 h.add(appAround2);
 h.remove(appAround2);
 h.remove(appAround1);
+//console.log(h.after)
 h.after(function (){
     console.log(this.name)
 }, {name: 'app after 1'});
+
+
+h.after(function (){
+    console.log('after...do some thing...')
+    return new Halt('dd', 789);
+});
 
 h.before(function (){
     console.log(this.name)
@@ -49,4 +56,4 @@ h.before(function (){
 
 //console.dir(h);
 
-h.exec(1,2,3);
+console.log(h.exec(1,2,3));
