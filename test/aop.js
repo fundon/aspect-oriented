@@ -7,6 +7,7 @@ var Aop = require('../lib/aop').Aop,
     Advice = Aop.Advice,
     Executor = Aop.Executor,
     Handler = Aop.Handler;
+    EventEngine = Aop.EventEngine;
 
 var app = new Method({
     handle: function () {
@@ -57,3 +58,53 @@ h.before(function (){
 //console.dir(h);
 
 console.log(h.exec(1,2,3));
+
+console.log('\n----------- EventEngine');
+
+var sandbox = new EventEngine();
+
+sandbox.on('post:click', function (data) {
+    console.log('post:click');
+});
+
+sandbox.fire('post:click');
+
+var sandbox1 = new EventEngine();
+
+var o = {
+    on: function () {
+        console.log('sandbox1 on ... ')
+        return sandbox1.on.apply(sandbox1, arguments);
+    }
+};
+
+var sm = new Method(o, 'on');
+var hm = new Handler(sm);
+
+hm.after(function(){
+    console.log('after ...');
+});
+
+hm.before(function(){
+    console.log('before ...');
+});
+
+hm.around(function(advice, args){
+    console.log('around ...');
+    advice.exec.apply(advice, args);
+    console.log('around ...');
+});
+
+hm.exec('post:change', function(){
+    console.log('hm - post:change ...');
+});
+
+hm.exec('post:click', function(){
+    console.log('hm - post:click ...');
+});
+
+hm.exec(':click', function(){
+    console.log('hm - :click ...');
+});
+
+sandbox1.fire(':click');
