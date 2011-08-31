@@ -78,8 +78,7 @@ var o = {
     }
 };
 
-var sm = new Method(o, 'on');
-var hm = new Handler(sm);
+var hm = Handler.getInstance(o, 'on');
 
 hm.after(function(){
     console.log('after ...');
