@@ -1,4 +1,5 @@
 var Aop = require('../lib/aop').Aop,
+    Eventx = require('../lib/eventx').Eventx,
     Method = Aop.Method,
     Halt = Aop.Halt,
     Prevent = Aop.Prevent,
@@ -7,7 +8,7 @@ var Aop = require('../lib/aop').Aop,
     Advice = Aop.Advice,
     Executor = Aop.Executor,
     Handler = Aop.Handler;
-    EventEngine = Aop.EventEngine;
+    EventTarget = Eventx.EventTarget;
 
 var app = new Method({
     handle: function () {
@@ -59,9 +60,9 @@ h.before(function (){
 
 console.log(h.exec(1,2,3));
 
-console.log('\n----------- EventEngine');
+console.log('\n----------- EventTarget');
 
-var sandbox = new EventEngine();
+var sandbox = new EventTarget();
 
 sandbox.on('post:click', function (data) {
     console.log('post:click');
@@ -69,7 +70,7 @@ sandbox.on('post:click', function (data) {
 
 sandbox.fire('post:click');
 
-var sandbox1 = new EventEngine();
+var sandbox1 = new EventTarget();
 
 var o = {
     on: function () {
