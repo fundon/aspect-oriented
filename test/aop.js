@@ -77,10 +77,20 @@ console.log('\n----------- EventTarget');
 
 var sandbox = new EventTarget();
 
+console.dir(sandbox);
 sandbox.on('post:click', function (data) {
     console.log('post:click');
 });
 
+sandbox.once('post:click', function (data) {
+    console.log('once1 post:click');
+});
+
+sandbox.once('post:click', function (data) {
+    console.log('once2 post:click');
+});
+
+sandbox.fire('post:click');
 sandbox.fire('post:click');
 
 var sandbox1 = new EventTarget();
@@ -116,8 +126,14 @@ hm.exec('post:click', function(){
     console.log('hm - post:click ...');
 });
 
+sandbox1.once('post:click', function() {
+    console.log('once -- post:click');
+});
+
 hm.exec(':click', function(){
     console.log('hm - :click ...');
 });
 
+sandbox1.fire(':click');
+console.log('-------------- file again!');
 sandbox1.fire(':click');
