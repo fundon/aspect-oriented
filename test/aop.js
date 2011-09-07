@@ -61,6 +61,7 @@ var ba = new Advice({name: 'app before and after'}, function (advice){
 h.add(ba);
 */
 
+// including before-event and after-event
 h.inject(3, function() {
     console.log('inject before and after.')
 });
