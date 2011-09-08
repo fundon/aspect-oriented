@@ -70,29 +70,48 @@ h.before(function (){
     console.log(this.name)
 }, {name: 'app before 1'});
 
-console.dir(h);
+//console.dir(h);
 
-console.log(h.exec(1,2,3));
+//console.log(h.exec(1,2,3));
 
 console.log('\n----------- EventTarget');
 
 var sandbox = new EventTarget();
 
-console.dir(sandbox);
+//console.dir(sandbox);
 sandbox.on('post:click', function (data) {
-    console.log('post:click');
+    console.log('on1 post:click');
 });
 
-sandbox.once('post:click', function (data) {
+sandbox.on('post:down', function (data) {
+    console.log('on1 post:down');
+});
+
+var s1 = sandbox.once('post:click', function (data) {
     console.log('once1 post:click');
 });
+
+//sandbox.detach('post:click');
 
 sandbox.once('post:click', function (data) {
     console.log('once2 post:click');
 });
 
-sandbox.fire('post:click');
-sandbox.fire('post:click');
+sandbox.once(':click', function (data) {
+    console.log('once3 :click');
+});
+
+sandbox.on('post:*', function (data) {
+    console.log('on post');
+});
+
+//console.dir(sandbox.subscribers);
+
+//sandbox.fire('post:click');
+//sandbox.fire('post:down');
+sandbox.fire('post');
+console.log('------');
+sandbox.fire('post');
 
 var sandbox1 = new EventTarget();
 
