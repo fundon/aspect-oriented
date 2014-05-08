@@ -1,5 +1,5 @@
 {
-  "name": "aspects",
+  "name": "aspect-oriented",
   "version": "0.0.0",
   "description": "Aspect Oriented Programming for JavaScript",
   "main": "index.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/fundon/aspects.git"
+    "url": "git@github.com:fundon/aspect-oriented.git"
   },
   "keywords": [
     "aspect",
@@ -21,7 +21,7 @@
   "author": "Fangdun Cai <cfddream@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/fundon/aspects/issues"
+    "url": "https://github.com/fundon/aspect-oriented/issues"
   },
-  "homepage": "https://github.com/fundon/aspects"
+  "homepage": "https://github.com/fundon/aspect-oriented"
 }
