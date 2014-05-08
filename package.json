@@ -1,11 +1,8 @@
 {
   "name": "aspect-oriented",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Aspect Oriented Programming for JavaScript",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "test": "make test"
   },
