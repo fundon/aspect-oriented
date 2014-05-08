@@ -1,16 +1,17 @@
+'use strict';
 
-var ASLICE = Array.prototype.slice;
-var POW = Math.pow;
+var slice = Array.prototype.slice;
+var pow = Math.pow;
 // event mods
 var BEFORE = 1;
 var AFTER = 2;
 var AROUND = 4;
-var EMS = ['before', 'after', 'around'];
+var EMS = 'before after around'.split(' ');
 
 function adviceMods(m) {
   var a = [], k = 0;
   while (EMS[k]) {
-    (m & POW(2, k)) && a.push(EMS[k]);
+    if (m & pow(2, k)) a.push(EMS[k]);
     k++;
   }
   return a;
@@ -93,7 +94,7 @@ function Halt(msg, retVal) {
   this.retVal = retVal;
 }
 
-/** 
+/**
  *  Alter prevented status and jump the main function when before.
  *
  *  @param {String} msg
@@ -114,39 +115,40 @@ function Prevent(msg) {
 function Advice(obj, fn, e) {
   // default before event
   var ms = adviceMods(e);
-  if (!ms.length) {
-      return false; 
-  }
+  if (!ms.length) return false;
+
   this.target = obj;
   this.fn = fn;
   this.mode = e;
   this.type = ms.join(' ');
-  while (e = ms.pop()) {
-      this['_' + e + '_'] = 1;
+  while ((e = ms.pop())) {
+    this['__' + e] = 1;
   }
 }
 
 Advice.prototype = {
 
   /**
+   *  Execute the function.
+   *
    *  @param {Number} e
-   *  @param {any}
-   *  @return {any}
+   *  @param {Mixed}
+   *  @param {Mixed}
+   *  @return {Mixed}
    *  @api private
    */
 
   _exec: function (e) {
-    if (this['_' + EMS[e >> 1] + '_']) {
+    if (this['__' + EMS[e >> 1]]) {
       return this.fn.call(this.target, arguments[1], arguments[2]);
     }
   },
 
   /**
-   *  给主体函数添加 before 事件
+   *  Add a before function.
    *
-   *  @method before
-   *  @param {any} args
-   *  @return {any}
+   *  @param {Mixed} args
+   *  @return {Mixed}
    */
 
   before: function () {
@@ -154,21 +156,22 @@ Advice.prototype = {
   },
 
   /**
-    * 给主体函数添加 after 事件
-    * @method after
-    * @param {any} args
-    * @return {any}
-    */
+   *  Add a after function.
+   *
+   *  @param {Mixed} args
+   *  @return {Mixed}
+   */
+
   after: function () {
     return this._exec(AFTER, arguments[0], arguments[1]);
   },
 
   /**
-    * 给主体函数添加 around 事件
-    * @method around
-    * @param {any} args
-    * @return {any}
-    */
+   *  Add a around function.
+   *  @param {Mixed} args
+   *  @return {Mixed}
+   */
+
   around: function () {
     return this._exec(AROUND, arguments[0], arguments[1]);
   }
@@ -186,68 +189,69 @@ function Executor(target, advice) {
 
 Executor.prototype = {
 
-/**
-  * 执行函数
-  * @method handle
-  * @param {any} arg*
-  * @return {any} ret
+ /**
+  * Execute the handle.
+  *
+  *  @param {any} arg*
+  *  @return {any} ret
   */
-exec: function () {
-    var args = ASLICE.call(arguments, 0),
-        ret, newRet,
+
+  exec: function () {
+    var args = slice.call(arguments, 0),
         prevented = false,
         target = this.target,
-        advice = this.advice;
+        advice = this.advice,
+        ret, newRet;
 
     if (advice) {
 
-        if (advice.e === AROUND) {
-            ret = advice.around(target, args);
-        } else {
+      if (advice.e === AROUND) {
+        ret = advice.around(target, args);
+      } else {
 
-            // execute before method
-            ret = advice.before(target, args);
-            if (ret) {
-                switch (ret.constructor) {
-                    case Halt:
-                        return ret.retVal;
-                    case AlterArgs:
-                        args = ret.newArgs;
-                        break;
-                    case Prevent:
-                        prevented = true;
-                        break;
-                    default:
-                }
-            }
-
-            // execute method
-            if (!prevented) {
-                ret = target.exec.apply(target, args);
-            }
-
-            this.originalRetVal = target.currentRetVal;
-            this.currentRetVal = ret;
-
-            // execute after method
-            newRet = advice.after(target, args);
-            if (newRet) {
-                switch (newRet.constructor) {
-                    case Halt:
-                        return newRet.retVal;
-                    case AlterReturn:
-                        ret = newRet.newRetVal;
-                        this.currentRetVal = ret;
-                }
-            }
+        // execute before method
+        ret = advice.before(target, args);
+        if (ret) {
+          switch (ret.constructor) {
+            case Halt:
+              return ret.retVal;
+            case AlterArgs:
+              args = ret.newArgs;
+              break;
+            case Prevent:
+              prevented = true;
+              break;
+            default:
+          }
         }
 
+        // execute method
+        if (!prevented) {
+          ret = target.exec.apply(target, args);
+        }
+
+        this.originalRetVal = target.currentRetVal;
+        this.currentRetVal = ret;
+
+        // execute after method
+        newRet = advice.after(target, args);
+        if (newRet) {
+          switch (newRet.constructor) {
+            case Halt:
+              return newRet.retVal;
+            case AlterReturn:
+              ret = newRet.newRetVal;
+              this.currentRetVal = ret;
+          }
+        }
+      }
+
     } else {
-        ret = target.exec.apply(target, args);
+      ret = target.exec.apply(target, args);
     }
 
     return ret;
-}
+  }
 };
 
 /**
@@ -269,10 +273,10 @@ Handler.getInstance = function (obj, fn) {
 Handler.prototype = {
 
   /**
-   * Add a advice to this handler
+   *  Add a advice to this handler
    *
-   * @param {Advice} advice
-   * @return {Executor} executor
+   *  @param {Advice} advice
+   *  @return {Executor} executor
    */
 
   add: function (advice) {
@@ -281,10 +285,10 @@ Handler.prototype = {
   },
 
   /**
-   * Remove a advice
+   *  Remove a advice
    *
-   * @param {Advice} advice
-   * @return {Executor} executor
+   *  @param {Advice} advice
+   *  @return {Executor} executor
    */
 
   remove: function (advice) {
@@ -296,7 +300,7 @@ Handler.prototype = {
         er.target = this.remove(advice);
       }
     }
-    this.executor = er;
+    //this.executor = er;
     return er;
   },
 
